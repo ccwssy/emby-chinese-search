@@ -23,6 +23,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using static EmbyChineseSearch.Options.Utility;
 
 #nullable disable
 namespace EmbyChineseSearch
@@ -70,6 +71,8 @@ namespace EmbyChineseSearch
 
             DefaultUICulture = new CultureInfo(configurationManager.Configuration.UICulture);
             DebugMode = true;
+            Logger.Info("AppVer={0}, VerTarget={1}, IsMatch={2}", AppVer, VerTarget, AppVer == VerTarget);
+            Logger.Info("IsModSupported={0}", IsModSupported);
         }
 
         public static bool IsModSupported

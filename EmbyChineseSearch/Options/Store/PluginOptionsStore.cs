@@ -2,13 +2,18 @@
 using Emby.Web.GenericEdit.Elements;
 using Emby.Web.GenericEdit.PropertyDiff;
 using MediaBrowser.Common;
+using MediaBrowser.Controller.Persistence;
 using MediaBrowser.Model.Logging;
 using EmbyChineseSearch.Mod;
 using EmbyChineseSearch.Options.UIBaseClasses.Store;
 using EmbyChineseSearch.Properties;
+using SQLitePCL.pretty;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading;
 using static EmbyChineseSearch.Common.CommonUtility;
 using static EmbyChineseSearch.Options.Utility;
 
@@ -137,6 +142,17 @@ namespace EmbyChineseSearch.Options.Store
                 if (!suppress)
                 {
                     _logger.Info("EnhanceChineseSearch is set to {0}", options.ModOptions.EnhanceChineseSearch);
+
+                    // If Chinese search just got enabled and tokenizer not yet loaded, force init now
+                    if (options.ModOptions.EnhanceChineseSearch)
+                    {
+                        var mod = PatchManager.GetMod<EnhanceChineseSearch>();
+                        if (mod != null && string.Equals(EnhanceChineseSearch.CurrentTokenizerName, "unknown", StringComparison.OrdinalIgnoreCase))
+                        {
+                            ForceInitializeTokenizer();
+                        }
+                    }
+
                     var searchScope = string.Join(", ",
                         options.ModOptions.SearchScope
                             ?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
@@ -157,6 +173,67 @@ namespace EmbyChineseSearch.Options.Store
                 }
 
                 if (suppress) _currentSuppressOnOptionsSaved = false;
+            }
+        }
+
+        private void ForceInitializeTokenizer()
+        {
+            try
+            {
+                _logger.Info("ForceInitializeTokenizer - Starting");
+
+                // Get the existing SqliteItemRepository instance from the item repository
+                var asm = Assembly.Load("Emby.Server.Implementations");
+                var repoType = asm.GetType("Emby.Server.Implementations.Data.SqliteItemRepository");
+                if (repoType == null)
+                {
+                    _logger.Warn("ForceInitializeTokenizer - Could not find SqliteItemRepository type");
+                    return;
+                }
+
+                // Find the connection field on the concrete SqliteItemRepository
+                FieldInfo connField = null;
+                foreach (var f in new[] { "_connection", "connection", "_db", "db" })
+                {
+                    connField = repoType.GetField(f, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public | BindingFlags.Instance);
+                    if (connField != null && typeof(IDatabaseConnection).IsAssignableFrom(connField.FieldType))
+                    {
+                        _logger.Info("ForceInitializeTokenizer - Found connection field: " + f);
+                        break;
+                    }
+                }
+
+                if (connField == null)
+                {
+                    _logger.Warn("ForceInitializeTokenizer - Could not find connection field");
+                    return;
+                }
+
+                // Get the instance - it's registered in the DI container
+                var itemRepo = Plugin.Instance.ApplicationHost.Resolve<IItemRepository>();
+                if (itemRepo == null)
+                {
+                    _logger.Warn("ForceInitializeTokenizer - Could not resolve IItemRepository");
+                    return;
+                }
+
+                // Get the connection value
+                var connection = connField.GetValue(itemRepo) as IDatabaseConnection;
+                if (connection == null)
+                {
+                    _logger.Warn("ForceInitializeTokenizer - Connection is null");
+                    return;
+                }
+
+                _logger.Info("ForceInitializeTokenizer - Got connection, calling ForceInitializeOnConnection");
+                var result = EnhanceChineseSearch.ForceInitializeOnConnection(connection);
+                _logger.Info("ForceInitializeTokenizer - Result: {0}", result);
+            }
+            catch (Exception ex)
+            {
+                _logger.Warn("ForceInitializeTokenizer failed: " + ex.Message);
+                if (Plugin.Instance.DebugMode)
+                    _logger.Debug(ex.StackTrace);
             }
         }
     }

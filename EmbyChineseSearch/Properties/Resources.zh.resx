@@ -271,7 +271,7 @@
     <value>中文搜索增强</value>
   </data>
   <data name="ModOptions_EnhanceChineseSearch_Support_Chinese_fuzzy_search_and_Pinyin_search__Default_is_OFF_" xml:space="preserve">
-    <value>支持中文模糊搜索和拼音搜索，默认关闭。</value>
+    <value>支持中文模糊搜索和拼音搜索，启用后需重启Emby才能生效。默认关闭。</value>
   </data>
   <data name="ItemType_Movie_Movie" xml:space="preserve">
     <value>电影</value>

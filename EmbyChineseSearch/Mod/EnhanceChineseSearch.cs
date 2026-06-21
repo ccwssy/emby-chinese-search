@@ -26,6 +26,23 @@ namespace EmbyChineseSearch.Mod
         private static readonly string SimpleTokenizerName = "simple";
         private static readonly string FtsTableName = AppVer >= Ver4830 ? "fts_search9" : "fts_search8";
 
+        /// <summary>
+        /// Force initialize on an existing library database connection (bypass CreateConnection postfix).
+        /// </summary>
+        public static bool ForceInitializeOnConnection(IDatabaseConnection connection)
+        {
+            if (_searchPatchCompleted || _patchPhase2Initialized) return false;
+
+            var tokenizerLoaded = LoadTokenizerExtension(connection);
+            if (tokenizerLoaded)
+            {
+                _patchPhase2Initialized = true;
+                PatchPhase2(connection);
+                return true;
+            }
+            return false;
+        }
+
         public static string CurrentTokenizerName { get; private set; } = "unknown";
 
         private static readonly string TokenizerPath =
@@ -73,6 +90,18 @@ namespace EmbyChineseSearch.Mod
             try
             {
                 var sqlitePCLEx = Assembly.Load("SQLitePCLRawEx.core");
+                if (sqlitePCLEx == null)
+                {
+                    // Fallback: try loading by partial name
+                    foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+                    {
+                        if (asm.GetName().Name.Contains("SQLitePCLRawEx"))
+                        {
+                            sqlitePCLEx = asm;
+                            break;
+                        }
+                    }
+                }
                 _sqlitePCLRawExRaw = sqlitePCLEx.GetType("SQLitePCLEx.raw");
                 _sqlite3_enable_load_extension = _sqlitePCLRawExRaw.GetMethod("sqlite3_enable_load_extension",
                     BindingFlags.Static | BindingFlags.Public);
@@ -87,19 +116,51 @@ namespace EmbyChineseSearch.Mod
                         _sqlite3_enable_load_extension = null;
                     }
                 }
+                if (Plugin.Instance.DebugMode)
+                    Plugin.Instance.Logger.Info("OnInitialize - sqlite3_enable_load_extension: " + (_sqlite3_enable_load_extension != null));
             }
-            catch { }
+            catch (Exception ex)
+            {
+                if (Plugin.Instance.DebugMode)
+                {
+                    Plugin.Instance.Logger.Info("OnInitialize - Failed to load SQLitePCLRawEx.core: " + ex.Message);
+                }
+            }
 
             try
             {
-                _sqlite3_db = typeof(SQLiteDatabaseConnection).GetField("db", BindingFlags.NonPublic | BindingFlags.Instance);
+                // Try multiple possible field names for the raw sqlite3 handle
+                var fieldCandidates = new[] { "db", "_db", "_sqlite3", "handle", "_handle", "nativeHandle" };
+                foreach (var fieldName in fieldCandidates)
+                {
+                    var field = typeof(SQLiteDatabaseConnection).GetField(fieldName,
+                        BindingFlags.NonPublic | BindingFlags.Instance);
+                    if (field != null)
+                    {
+                        // Verify the type references SQLitePCLEx.sqlite3
+                        if (field.FieldType.FullName == "SQLitePCLEx.sqlite3" ||
+                            field.FieldType.FullName?.Contains(".sqlite3") == true)
+                        {
+                            _sqlite3_db = field;
+                            if (Plugin.Instance.DebugMode)
+                                Plugin.Instance.Logger.Info("OnInitialize - Found db field: " + fieldName);
+                            break;
+                        }
+                    }
+                }
+                if (Plugin.Instance.DebugMode)
+                    Plugin.Instance.Logger.Info("OnInitialize - _sqlite3_db: " + (_sqlite3_db != null));
             }
-            catch { }
+            catch (Exception ex)
+            {
+                if (Plugin.Instance.DebugMode)
+                    Plugin.Instance.Logger.Info("OnInitialize - Failed to get db field: " + ex.Message);
+            }
 
             try
             {
                 Assembly sqliteAssembly = null;
-                var candidateAssemblies = new[] { "Emby.Sqlite", "MediaBrowser.Sqlite" };
+                var candidateAssemblies = new[] { "Emby.Sqlite", "MediaBrowser.Sqlite", "Emby.Server.Implementations" };
                 foreach (var assemblyName in candidateAssemblies)
                 {
                     try
