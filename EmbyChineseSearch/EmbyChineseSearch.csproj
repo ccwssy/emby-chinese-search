@@ -38,32 +38,8 @@
 		<EmbeddedResource Include="Web\Resources\strmassistant.js" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Reference Include="Emby.Api">
-			<HintPath>../libs/publicized/Emby.Api.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Emby.ProcessRun">
-			<HintPath>../libs/publicized/Emby.ProcessRun.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Emby.Providers">
-			<HintPath>../libs/publicized/Emby.Providers.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Emby.Sqlite">
-			<HintPath>../libs/publicized/Emby.Sqlite.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="MediaBrowser.Controller">
-			<HintPath>../libs/publicized/MediaBrowser.Controller.dll</HintPath>
-		</Reference>
-	</ItemGroup>
-	
-	
   <ItemGroup>
-    <PackageReference Include="CHTCHSConv" Version="1.0.0">
-    </PackageReference>
+    <PackageReference Include="CHTCHSConv" Version="1.0.0" />
     <PackageReference Include="ILRepack" Version="2.0.44">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -71,8 +47,7 @@
     <PackageReference Include="Lib.Harmony" Version="2.4.2" />
     <PackageReference Include="mediabrowser.server.core" Version="4.9.1.90" />
     <PackageReference Include="SQLitePCL.pretty.core" Version="1.2.2" />
-    <PackageReference Include="TinyPinyin" Version="1.1.0">
-    </PackageReference>
+    <PackageReference Include="TinyPinyin" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>
