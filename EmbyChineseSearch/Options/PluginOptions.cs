@@ -33,7 +33,7 @@ namespace EmbyChineseSearch.Options
         [DisplayNameL("PluginOptions_ModOptions_Mod_Features", typeof(Resources))]
         public ModOptions ModOptions { get; set; } = new ModOptions();
 
-        [DisplayNameL("NetworkOptions_EditorTitle_Network", typeof(Resources))]
+        [Browsable(false)]
         public NetworkOptions NetworkOptions { get; set; } = new NetworkOptions();
 
         [DisplayNameL("AboutOptions_EditorTitle_About", typeof(Resources))]
