@@ -147,9 +147,9 @@ namespace EmbyChineseSearch
         }
 
         public ImageFormat ThumbImageFormat => ImageFormat.Png;
-        public override string Description => "Emby Chinese Search Enhancement";
+        public override string Description => "Emby中文搜索增强 — 拼音搜索、模糊搜索、SQLite FTS5 simple分词器";
         public override Guid Id => _id;
-        public sealed override string Name => "EmbyChineseSearch";
+        public sealed override string Name => "Emby中文搜索增强";
         public static Version CurrentVersion => Assembly.GetExecutingAssembly().GetName().Version;
         public CultureInfo DefaultUICulture { get; private set; }
         public Stream GetThumbImage()
