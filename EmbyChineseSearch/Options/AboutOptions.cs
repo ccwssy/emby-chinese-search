@@ -50,13 +50,13 @@ namespace EmbyChineseSearch.Options
             VersionInfoList.Clear();
 
             VersionInfoList.Add(
-            new GenericListItem
-            {
-                PrimaryText = Resources.About_Fork,
-                Icon = IconNames.title,
-                IconMode = ItemListIconMode.SmallRegular,
-                HyperLink = "https://blog.jiawei.xin/?p=1960",
-            });
+                new GenericListItem
+                {
+                    PrimaryText = "Emby中文搜索增强",
+                    Icon = IconNames.title,
+                    IconMode = ItemListIconMode.SmallRegular,
+                    HyperLink = "https://github.com/ccwssy/emby-chinese-search",
+                });
 
             VersionInfoList.Add(
                 new GenericListItem
@@ -68,16 +68,16 @@ namespace EmbyChineseSearch.Options
             VersionInfoList.Add(
                 new GenericListItem
                 {
-                    PrimaryText = Resources.Blog_Url,
+                    PrimaryText = "GitHub 仓库",
                     Icon = IconNames.code,
                     IconMode = ItemListIconMode.SmallRegular,
-                    HyperLink = "https://blog.jiawei.xin/?p=1960",
+                    HyperLink = "https://github.com/ccwssy/emby-chinese-search",
                 });
 
             VersionInfoList.Add(
                 new GenericListItem
                 {
-                    PrimaryText = Resources.Repo_Link,
+                    PrimaryText = "上游: StrmAssistant_less",
                     Icon = IconNames.code,
                     IconMode = ItemListIconMode.SmallRegular,
                     HyperLink = "https://github.com/xinjiawei/StrmAssistant_less",
@@ -85,18 +85,10 @@ namespace EmbyChineseSearch.Options
             VersionInfoList.Add(
                 new GenericListItem
                 {
-                    PrimaryText = Resources.Original_Repo_Link,
+                    PrimaryText = "上游: StrmAssistant (原始版)",
                     Icon = IconNames.code,
                     IconMode = ItemListIconMode.SmallRegular,
                     HyperLink = "https://github.com/sjtuross/StrmAssistant",
-                });
-            VersionInfoList.Add(
-                new GenericListItem
-                {
-                    PrimaryText = Resources.About_StrmAssistant_Pro,
-                    Icon = IconNames.code,
-                    IconMode = ItemListIconMode.SmallRegular,
-                    HyperLink = "https://github.com/sjtuross/StrmAssistant.Releases/releases/tag/v3.0.0.0\r\n",
                 });
         }
     }

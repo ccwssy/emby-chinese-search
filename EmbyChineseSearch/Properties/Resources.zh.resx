@@ -238,13 +238,13 @@
     <value>接管媒体信息提取 (ffprobe) 以及视频截图 (ffmpeg)，全媒体库生效，默认关闭。</value>
   </data>
   <data name="About_Fork" xml:space="preserve">
-    <value>神医助手精简版(StrmAssistant_less)。能力有限，只保留了中文搜索增强和代理配置功能。</value>
+    <value>Emby中文搜索增强 — 拼音搜索、模糊搜索、SQLite FTS5 simple分词器</value>
   </data>
   <data name="Original_Repo_Link" xml:space="preserve">
     <value>上游项目源码</value>
   </data>
   <data name="Blog_Url" xml:space="preserve">
-    <value>神医助手_less介绍以及更新途径</value>
+    <value>GitHub 仓库</value>
   </data>
   <data name="AboutOptions_EditorTitle_About" xml:space="preserve">
     <value>关于</value>
