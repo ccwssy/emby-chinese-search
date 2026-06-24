@@ -1,3 +1,10 @@
+# 此项目作废，使用新项目 [ViewMate](https://github.com/ccwssy/ViewMate)
+  ## 使用 ViewMate 一定要将此插件完整卸载。
+  ## 卸载
+  1. 在插件设置中**关闭**「中文搜索增强」，保存
+  2. 重启 Emby（自动恢复原始 FTS 索引）
+  3. 到插件管理页面卸载本插件
+  4. **切勿**直接删 DLL——会导致数据库 FTS 索引残留
 # Emby Chinese Search
 
 Emby 中文搜索增强插件。用 SQLite FTS5 `simple` 分词器替换默认 `unicode61`，实现中文模糊搜索和拼音搜索。
